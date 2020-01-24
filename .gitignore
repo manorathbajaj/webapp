@@ -3,6 +3,7 @@
 
 # Log file
 *.log
+local.properties
 
 # BlueJ files
 *.ctxt
@@ -33,7 +34,7 @@ hs_err_pid*
 .idea/**/shelf
 
 # Generated files
-.idea/**/contentModel.xml
+.idea/**
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
@@ -52,14 +53,14 @@ hs_err_pid*
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
 # auto-import.
-# .idea/artifacts
-# .idea/compiler.xml
-# .idea/jarRepositories.xml
-# .idea/modules.xml
-# .idea/*.iml
-# .idea/modules
-# *.iml
-# *.ipr
+.idea/artifacts
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+*.iml
+*.ipr
 
 # CMake
 cmake-build-*/
@@ -93,3 +94,20 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+ 
+.gradle
+/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+gradle/wrapper/gradle-wrapper.properties
+HELP.md
+
