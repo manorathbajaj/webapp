@@ -1,0 +1,75 @@
+plugins {
+    id 'org.springframework.boot' version '2.2.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'org.asciidoctor.convert' version '1.5.8'
+    id 'java'
+    id 'java-library'
+}
+
+group = 'com.manorath'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.data:spring-data-rest-hal-browser'
+    api 'org.apache.commons:commons-math3:3.6.1'
+    compileOnly 'org.projectlombok:lombok'
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
+    compile('org.springframework.boot:spring-boot-starter-security')
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-hateoas
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '1.2.2.RELEASE'
+    //Rest assured
+    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.0.0'
+    testCompile group: 'io.rest-assured', name: 'rest-assured-common', version: '4.0.0'
+    testCompile group: 'io.rest-assured', name: 'json-path', version: '4.0.0'
+    testCompile group: 'io.rest-assured', name: 'xml-path', version: '4.0.0'
+    //assertj
+    testCompile("org.assertj:assertj-core:3.11.1")
+    
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'mysql:mysql-connector-java'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+}
+
+
+
+test {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+}
