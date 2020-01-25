@@ -10,6 +10,10 @@ jobs:
           name: Gradle build
           command: 
             ./gradlew assemble
+      - run:
+          name: Gradle test
+          command:
+            ./gradlew test
 workflows:
   version: 2
   pr-check-workflow:
