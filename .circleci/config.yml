@@ -13,15 +13,26 @@ jobs:
     steps:
       - checkout # check out source code to working directory
       - restore_cache:
-          key:
-              - gradle-{{ checksum "build.gradle" }}
-          - run: ./gradlew assemble
-          - run: ./gradlew run
-          - run: ./gradlew test
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+          - run:
+              name: assemble
+              command: ./gradlew assemble
+          - run:
+              name: Run
+              command: ./gradlew run
+          - run:
+              name: Test
+              command: ./gradlew test
           - save_cache:
-                paths:
-                  - ~/.gradle
-                key: gradle-{{ checksum "build.gradle" }}
+              paths:
+                - ~/.gradle/wrapper
+              key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          - save_cache:
+              paths:
+                - ~/.gradle/caches
+              key: v1-gradle-cache-{{ checksum "build.gradle" }}
 workflows:
   version: 2
   pr-check-workflow:
