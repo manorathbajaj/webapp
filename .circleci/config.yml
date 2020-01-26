@@ -32,11 +32,8 @@ jobs:
       #    name: create database
       #    command: mysql -h 127.0.0.1 -u root -ppassword --execute="Create database csye6225"
       - run:
-          name: assemble
+          name: assemble(Compile)
           command: ./gradlew assemble
-      - run:
-          name: Run
-          command: ./gradlew bootRun
       - run:
           name: Test
           command: ./gradlew test
