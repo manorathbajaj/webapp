@@ -4,16 +4,24 @@ jobs:
   pr_check:
     docker:
       - image: circleci/openjdk:11.0.5-jdk-stretch
+      - image: circleci/mariadb:10.3.21-bionic-ram
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: csye6225
+          MYSQL_USER: root
+          MYSQL_PASSWORD: password
     steps:
       - checkout # check out source code to working directory
-      - run:
-          name: Gradle build
-          command: 
-            ./gradlew assemble
-     # - run:   Asks for a db. find a way to add mariadb on circleci
-     #     name: Gradle test
-     #     command:
-     #       ./gradlew test
+      - restore_cache:
+          keys:
+              - gradle-{{ checksum "build.gradle" }}
+          - run: ./gradlew assemble
+          - run: ./gradlew run
+          - run: ./gradlew test
+          - save_cache:
+                paths:
+                  - ~/.gradle
+                key: gradle-{{ checksum "build.gradle" }}
 workflows:
   version: 2
   pr-check-workflow:

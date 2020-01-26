@@ -50,5 +50,13 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(UserDontMatchException.class)
     public String userNotValidException() {return "Authenticated user and provided email dont match";}
 
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(BillDoesNotMatchException.class)
+    public String billNotAllowedException() {return "Bill id does not belong to the user";}
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(BillDoesNotExistException.class)
+    public String billDoesNotExistException() {return "Bill id does not exist";}
+
 
 }
