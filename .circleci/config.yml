@@ -8,8 +8,6 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: csye6225
-          MYSQL_USER: root
-          MYSQL_PASSWORD: password
     steps:
       - checkout # check out source code to working directory
       #- restore_cache:
@@ -30,9 +28,9 @@ jobs:
       - run:
           name: Install MySQL CLI
           command: sudo apt-get install default-mysql-client
-      - run:
-          name: create database
-          command: mysql -h 127.0.0.1 -u root -ppassword --execute="Create database csye6225"
+      #- run:
+      #    name: create database
+      #    command: mysql -h 127.0.0.1 -u root -ppassword --execute="Create database csye6225"
       - run:
           name: assemble
           command: ./gradlew assemble
