@@ -30,7 +30,7 @@ public class UserTest {
     public void contextLoads() {
         assertThat(userController).isNotNull();
     }
-    /*
+    
     @Test
     public void checkGoodRequest() {
         given().auth().preemptive().basic("bajajsss.m@husky.neu.edu","Manorath96!").
@@ -59,5 +59,5 @@ public class UserTest {
                         post("/v1/user");
         r.then().statusCode(400);
     }
-     */
+
 }
