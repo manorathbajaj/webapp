@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout # check out source code to working directory
       - restore_cache:
-          keys:
+          key:
               - gradle-{{ checksum "build.gradle" }}
           - run: ./gradlew assemble
           - run: ./gradlew run
