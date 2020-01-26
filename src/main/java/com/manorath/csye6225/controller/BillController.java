@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class BillController {
@@ -24,7 +25,7 @@ public class BillController {
             consumes = {"application/json"},
             produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Bill createUser(@Valid @RequestBody Bill bill,
+    public Bill createBill(@Valid @RequestBody Bill bill,
                              HttpServletResponse response, @RequestHeader(value = "Authorization")String auth) {
         String creds[] = Utils.decode(auth);
         if(bill.getId()!= null || bill.getOwnerID()!= null || bill.getCreatedTs()!= null || bill.getUpdatedTs() != null)
@@ -37,5 +38,14 @@ public class BillController {
         }
         response.setHeader("description","Bill created");
         return bill;
+    }
+
+    @RequestMapping(value = "v1/bills",
+            method = RequestMethod.GET,
+            produces = {"application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<Bill> getAllBills(HttpServletResponse response, @RequestHeader(value = "Authorization")String auth) {
+        String creds[] = Utils.decode(auth);
+        return billService.findBillByUser(creds[0]);
     }
 }

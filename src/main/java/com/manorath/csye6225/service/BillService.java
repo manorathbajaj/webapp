@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BillService extends GeneralExceptionHandler {
@@ -31,5 +32,10 @@ public class BillService extends GeneralExceptionHandler {
 
     public void deleteBill(String id) {
         billRepository.deleteById(id);
+    }
+
+    public List<Bill>  findBillByUser(String email) {
+        User u = userRepository.findUserByEmail(email);
+        return billRepository.findAllByOwnerID(u.getId());
     }
 }
