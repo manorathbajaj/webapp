@@ -25,14 +25,14 @@ jobs:
       - run:
           name: Test
           command: ./gradlew test
-      - save_cache:
-           paths:
-              - ~/.gradle/wrapper
-            key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      - save_cache:
-            paths:
-              - ~/.gradle/caches
-            key: v1-gradle-cache-{{ checksum "build.gradle" }}
+    - save_cache:
+        paths:
+          - ~/.gradle/wrapper
+        key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+    - save_cache:
+        paths:
+            - ~/.gradle/caches
+        key: v1-gradle-cache-{{ checksum "build.gradle" }}
 workflows:
   version: 2
   pr-check-workflow:
