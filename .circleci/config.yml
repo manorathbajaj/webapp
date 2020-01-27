@@ -26,8 +26,8 @@ jobs:
             done
             echo Failed waiting for MySQL && exit 1
       - run:
-          name: assemble
-          command: ./gradlew assemble
+          name: Compile
+          command: ./gradlew compileJava
       - run:
           name: Test
           command: ./gradlew test
