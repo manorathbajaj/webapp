@@ -25,26 +25,13 @@ jobs:
             sleep 1
             done
             echo Failed waiting for MySQL && exit 1
-      #- run:
-      #    name: Install MySQL CLI
-      #    command: sudo apt-get install default-mysql-client
-      #- run:
-      #    name: create database
-      #    command: mysql -h 127.0.0.1 -u root -ppassword --execute="Create database csye6225"
       - run:
-          name: assemble(Compile)
+          name: assemble
           command: ./gradlew assemble
       - run:
           name: Test
           command: ./gradlew test
-      #- save_cache:
-      #  paths:
-      #    - ~/.gradle/wrapper
-      #  key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      #- save_cache:
-      #  paths:
-      #     - ~/.gradle/caches
-      #  key: v1-gradle-cache-{{ checksum "build.gradle" }}
+
 
 workflows:
   version: 2

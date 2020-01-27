@@ -1,6 +1,8 @@
 package com.manorath.csye6225.controllers;
 
 import com.manorath.csye6225.controller.UserController;
+import com.manorath.csye6225.model.User;
+import com.manorath.csye6225.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -10,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+
+import javax.persistence.Table;
 
 import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,13 +28,26 @@ public class UserTest {
     UserController userController;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @Test
     public void contextLoads() {
         assertThat(userController).isNotNull();
     }
-    
+
+    @Test
+    public void createUserTest() {
+        User u = new User("abc@xyz.com","Manorath96!","abc","efg");
+        u.setId("123");
+        User x =userRepository.save(u);
+        assertThat(u.getFirstName()).isEqualTo(x.getFirstName());
+        userRepository.deleteById("123");
+    }
+/*
+
     @Test
     public void checkGoodRequest() {
         given().auth().preemptive().basic("bajajsss.m@husky.neu.edu","Manorath96!").
@@ -59,5 +76,5 @@ public class UserTest {
                         post("/v1/user");
         r.then().statusCode(400);
     }
-
+ */
 }
