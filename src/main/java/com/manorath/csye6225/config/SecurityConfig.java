@@ -29,7 +29,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().cors().and().httpBasic().and().authorizeRequests().antMatchers("v1/user/**").authenticated();
+        http.sessionManagement().and().csrf().disable().cors().and().httpBasic()
+                .and().authorizeRequests()
+                .antMatchers("v1/user/**","/v1/bill/**","v1/bills")
+                .authenticated();
     }
 
     @Override
