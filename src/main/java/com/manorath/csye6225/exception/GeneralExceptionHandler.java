@@ -40,7 +40,7 @@ public class GeneralExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PasswordNotValidException.class)
-    public String passwordNotValidException() {return "Enter a Valid password";}
+    public String passwordNotValidException() {return "Either username or password is not valid";}
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(FieldNotValidException.class)
