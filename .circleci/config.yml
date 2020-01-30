@@ -36,8 +36,7 @@ jobs:
 workflows:
   version: 2
   build_deploy:
-    jobs:
-    - pr_check
-    branches:
-      only:
-      - master
+    jobs: pr_check
+    filters:
+      branches:
+        only: master
