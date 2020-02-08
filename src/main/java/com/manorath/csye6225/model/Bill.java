@@ -63,7 +63,7 @@ public class Bill {
     @Getter
     @Setter
     @Column(name = "amount_due")
-    @DecimalMin(value = "00.01", message = "Due amoount should not be less than 0.01")
+    @DecimalMin(value = "00r.01", message = "Due amoount should not be less than 0.01")
     private BigDecimal amountDue;
 
     @Getter
@@ -80,4 +80,10 @@ public class Bill {
     @NotNull(message = "payment status should not be empty")
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    @Getter
+    @Setter
+    @Embedded
+    @Column(name = "attachment")
+    private File attachment;
 }
