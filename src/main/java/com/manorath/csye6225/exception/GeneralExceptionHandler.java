@@ -58,5 +58,9 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(BillDoesNotExistException.class)
     public String billDoesNotExistException() {return "Bill id does not exist";}
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(FileAlreadyExistsException.class)
+    public String fileAlreadyExistsException() {return "File already exists";}
+
 
 }

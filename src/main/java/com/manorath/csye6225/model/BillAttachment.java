@@ -8,10 +8,9 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Embeddable
-public class File {
+public class BillAttachment {
 
-    @Id
-    @Column(name = "id")
+    @Column(name = "attachment_id")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
