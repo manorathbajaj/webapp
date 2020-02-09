@@ -11,12 +11,8 @@ import java.util.Date;
 public class BillAttachment {
 
     @Column(name = "attachment_id")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
     @Getter
+    @Setter
     private String id;
 
 

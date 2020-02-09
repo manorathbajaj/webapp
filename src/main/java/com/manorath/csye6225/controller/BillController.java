@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class BillController extends GeneralExceptionHandler {
@@ -114,10 +115,11 @@ public class BillController extends GeneralExceptionHandler {
         else {
             BillAttachment billAttachment = new BillAttachment();
             billAttachment.setFileName(file.getOriginalFilename());
-            billAttachment.setUrl("/var/tmp/" + billId + "/" + file.getOriginalFilename());
+            billAttachment.setUrl("/var/tmp/csye6225/" + billId + "/" + file.getOriginalFilename());
             billAttachment.setUploadDate(new Date());
+            billAttachment.setId(UUID.randomUUID().toString());
 
-            File convertFile = new File("/var/tmp/" + billId + "/" + file.getOriginalFilename());
+            File convertFile = new File("/var/tmp/csye6225/" + billId + "/" + file.getOriginalFilename());
             convertFile.getParentFile().mkdirs();
             convertFile.createNewFile();
             FileOutputStream fout = new FileOutputStream(convertFile);
@@ -127,6 +129,56 @@ public class BillController extends GeneralExceptionHandler {
             b.setAttachment(billAttachment);
             billService.updateBill(creds[0],billId,b);
             return billAttachment;
+        }
+    }
+
+    @RequestMapping(value = "v1/bill/{id}/file/{fileid}", method = RequestMethod.GET,
+            produces = {"application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public BillAttachment getfile(@RequestHeader(value = "Authorization")String auth
+            , @PathVariable(value = "id") String billId, @PathVariable(value = "fileid") String fileid) {
+        String creds[] = Utils.decode(auth);
+
+        Bill b = billService.getBillById(creds[0],billId);
+
+        if (b.getAttachment()!= null) {
+            if(b.getAttachment().getId().equals(fileid)){
+                return b.getAttachment();
+            }
+            else {
+                throw new FileDoesNotMatch("File does not exist");
+            }
+        }
+        else {
+            throw new FileDoesNotExistException("File does not exist");
+        }
+    }
+
+    @RequestMapping(value = "v1/bill/{id}/file/{fileid}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletefile(@RequestHeader(value = "Authorization")String auth
+            , @PathVariable(value = "id") String billId, @PathVariable(value = "fileid") String fileid) {
+        String creds[] = Utils.decode(auth);
+
+        Bill b = billService.getBillById(creds[0],billId);
+
+        if (b.getAttachment()!= null) {
+            if(b.getAttachment().getId().equals(fileid)){
+                File convertFile = new File("/var/tmp/csye6225/" + billId + "/" +b.getAttachment().getFileName());
+
+                if(convertFile.exists()) {
+                    convertFile.delete();
+                }
+                
+                b.setAttachment(null);
+
+            }
+            else {
+                throw new FileDoesNotMatch("File does not exist");
+            }
+        }
+        else {
+            throw new FileDoesNotExistException("File does not exist");
         }
     }
 }
