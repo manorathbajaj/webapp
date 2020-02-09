@@ -168,10 +168,12 @@ public class BillController extends GeneralExceptionHandler {
 
                 if(convertFile.exists()) {
                     convertFile.delete();
+                    convertFile = new File("/var/tmp/csye6225/" + billId);
+                    convertFile.delete();
                 }
-                
-                b.setAttachment(null);
 
+                b.setAttachment(null);
+                billService.updateBill(creds[0],billId,b);
             }
             else {
                 throw new FileDoesNotMatch("File does not exist");
