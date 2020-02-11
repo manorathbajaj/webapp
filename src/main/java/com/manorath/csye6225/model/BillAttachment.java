@@ -1,33 +1,38 @@
 package com.manorath.csye6225.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Embeddable
+@Getter
+@Setter
 public class BillAttachment {
 
     @Column(name = "attachment_id")
-    @Getter
-    @Setter
     private String id;
 
 
     @Column(name = "file_name")
-    @Getter
-    @Setter
     private String fileName;
 
-    @Column(name = "url")
-    @Getter
-    @Setter
+    @Column(name = "file_url")
     private String url;
 
-    @Column(name = "upload_date")
-    @Getter
-    @Setter
+    @Column(name = "file_upload_date")
     private Date uploadDate;
+
+    @JsonIgnore
+    @Column(name = "file_size")
+    private long attachmentSize;
+
+    @JsonIgnore
+    @Column(name = "file_md5_hash")
+    private String md5Hash;
+
+    @JsonIgnore
+    @Column(name = "file_content_type")
+    private String fileContentType;
 }

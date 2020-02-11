@@ -70,5 +70,8 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(FileDoesNotMatch.class)
     public String fileDoesNotMatchException() {return "File id does not match with existing file";}
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(FileNotSupportedException.class)
+    public String fileNotSupportedException() {return "File type not supported";}
 
 }
