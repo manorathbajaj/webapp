@@ -58,5 +58,20 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(BillDoesNotExistException.class)
     public String billDoesNotExistException() {return "Bill id does not exist";}
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(FileAlreadyExistsException.class)
+    public String fileAlreadyExistsException() {return "File already exists";}
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(FileDoesNotExistException.class)
+    public String fileDoesNotExistsException() {return "File does Not exist";}
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(FileDoesNotMatch.class)
+    public String fileDoesNotMatchException() {return "File id does not match with existing file";}
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(FileNotSupportedException.class)
+    public String fileNotSupportedException() {return "File type not supported";}
 
 }

@@ -80,4 +80,10 @@ public class Bill {
     @NotNull(message = "payment status should not be empty")
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    @Getter
+    @Setter
+    @Embedded
+    @Column(name = "attachment")
+    private BillAttachment attachment;
 }

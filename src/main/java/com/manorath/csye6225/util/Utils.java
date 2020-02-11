@@ -3,6 +3,8 @@ package com.manorath.csye6225.util;
 import com.manorath.csye6225.model.User;
 import net.minidev.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class Utils {
@@ -45,5 +47,21 @@ public class Utils {
 
     public static boolean checkPassword(String password) {
         return password.matches(PASSWORD_REGEX);
+    }
+
+
+    public static String getMD5(byte[] data) throws NoSuchAlgorithmException
+    {
+        MessageDigest messageDigest=MessageDigest.getInstance("MD5");
+
+        byte[] digest = messageDigest.digest(data);
+
+        StringBuffer sb = new StringBuffer();
+        for (byte b : digest) {
+
+            sb.append(Integer.toHexString((int) (b & 0xff)));
+
+        }
+        return sb.toString();
     }
 }
