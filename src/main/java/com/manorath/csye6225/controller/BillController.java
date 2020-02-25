@@ -1,16 +1,25 @@
 package com.manorath.csye6225.controller;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Builder;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.manorath.csye6225.exception.*;
 import com.manorath.csye6225.model.Bill;
 import com.manorath.csye6225.model.BillAttachment;
 import com.manorath.csye6225.service.BillService;
 import com.manorath.csye6225.util.Utils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
@@ -20,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @RestController
 public class BillController extends GeneralExceptionHandler {
@@ -33,9 +43,20 @@ public class BillController extends GeneralExceptionHandler {
         allowedTypes.add("image/png");
         allowedTypes.add("application/pdf");
     }
-
     @Autowired
     BillService billService;
+
+    @Value("${amazon.s3.bucket}")
+    String bucketName;
+
+    private AmazonS3 s3Client;
+
+
+    @PostConstruct
+    private void buildAmazon() {
+        this.s3Client = AmazonS3ClientBuilder.standard().build();
+    }
+
 
     @RequestMapping(value = "v1/bill/",
             method = RequestMethod.POST,
@@ -119,9 +140,6 @@ public class BillController extends GeneralExceptionHandler {
         String creds[] = Utils.decode(auth);
 
         Bill b = billService.getBillById(creds[0],billId);
-
-        //file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE) || file.getContentType().equals(MediaType.IMAGE_PNG_VALUE)
-        //                || file.getContentType().equals(MediaType.APPLICATION_PDF_VALUE) || file.getContentType().equals("image/jpg")
         if (!allowedTypes.contains(file.getContentType()))
         {
             throw new FileNotSupportedException("file not supported");
@@ -132,15 +150,22 @@ public class BillController extends GeneralExceptionHandler {
         }
         else {
 
+            ObjectMetadata obj = new ObjectMetadata();
             BillAttachment billAttachment = new BillAttachment();
             billAttachment.setFileName(file.getOriginalFilename());
-            billAttachment.setUrl("/var/tmp/csye6225/" + billId + "/" + file.getOriginalFilename());
+            billAttachment.setUrl(billId + "/" + file.getOriginalFilename());
             billAttachment.setUploadDate(new Date());
             billAttachment.setId(UUID.randomUUID().toString());
-            billAttachment.setAttachmentSize(file.getSize());
-            billAttachment.setMd5Hash(Utils.getMD5(file.getBytes()));
+
             billAttachment.setFileContentType(file.getContentType());
             b.setAttachment(billAttachment);
+
+
+            PutObjectResult result= s3Client.putObject(bucketName,billId+"/"+file.getOriginalFilename(),file.getInputStream(),new ObjectMetadata());
+            billAttachment.setMd5Hash(result.getContentMd5());
+            billAttachment.setAttachmentSize(result.getMetadata().getContentLength());
+            billAttachment.setFileVersionId(result.getVersionId());
+
             billService.updateBill(creds[0],billId,b);
             return billAttachment;
         }
@@ -177,14 +202,7 @@ public class BillController extends GeneralExceptionHandler {
 
         if (b.getAttachment()!= null) {
             if(b.getAttachment().getId().equals(fileid)){
-                File convertFile = new File("/var/tmp/csye6225/" + billId + "/" +b.getAttachment().getFileName());
-
-                if(convertFile.exists()) {
-                    convertFile.delete();
-                    convertFile = new File("/var/tmp/csye6225/" + billId);
-                    convertFile.delete();
-                }
-
+                s3Client.deleteObject(bucketName,b.getAttachment().getUrl());
                 b.setAttachment(null);
                 billService.updateBill(creds[0],billId,b);
             }
