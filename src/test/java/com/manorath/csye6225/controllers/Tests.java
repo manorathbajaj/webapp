@@ -9,6 +9,7 @@ import com.manorath.csye6225.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,12 +45,10 @@ public class Tests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
     public void contextLoads() {
         assertThat(userController).isNotNull();
     }
 
-    @Test
     public void createUserTest() {
         User u = new User("abc@xyz.com","Manorath96!","abc","efg");
         u.setId("123");
@@ -58,7 +57,6 @@ public class Tests {
         userRepository.deleteById("123");
     }
 
-    @Test
     public void createBill() {
         Bill b = new Bill();
         b.setCreatedTs(new Date());

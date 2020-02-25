@@ -25,6 +25,10 @@ public class BillAttachment {
     private Date uploadDate;
 
     @JsonIgnore
+    @Column(name= "last_modified_date")
+    private Date lastModified;
+
+    @JsonIgnore
     @Column(name = "file_size")
     private long attachmentSize;
 
@@ -35,4 +39,8 @@ public class BillAttachment {
     @JsonIgnore
     @Column(name = "file_content_type")
     private String fileContentType;
+
+    @JsonIgnore
+    @Column(name = "file_version_id")
+    private String fileVersionId;
 }

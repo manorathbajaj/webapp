@@ -1,5 +1,6 @@
 package com.manorath.csye6225.util;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.manorath.csye6225.model.User;
 import net.minidev.json.JSONObject;
 
