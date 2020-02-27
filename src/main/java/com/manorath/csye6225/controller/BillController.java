@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3Object;
 import com.manorath.csye6225.exception.*;
 import com.manorath.csye6225.model.Bill;
 import com.manorath.csye6225.model.BillAttachment;
@@ -160,11 +161,14 @@ public class BillController extends GeneralExceptionHandler {
             billAttachment.setFileContentType(file.getContentType());
             b.setAttachment(billAttachment);
 
+            // store
+            s3Client.putObject(bucketName,billId+"/"+file.getOriginalFilename(),file.getInputStream(),new ObjectMetadata());
+            // get attachment to store metadata
+            S3Object result = s3Client.getObject(bucketName,billAttachment.getUrl());
 
-            PutObjectResult result= s3Client.putObject(bucketName,billId+"/"+file.getOriginalFilename(),file.getInputStream(),new ObjectMetadata());
-            billAttachment.setMd5Hash(result.getContentMd5());
-            billAttachment.setAttachmentSize(result.getMetadata().getContentLength());
-            billAttachment.setFileVersionId(result.getVersionId());
+            billAttachment.setMd5Hash(result.getObjectMetadata().getContentMD5());
+            billAttachment.setAttachmentSize(result.getObjectMetadata().getContentLength());
+            billAttachment.setFileVersionId(result.getObjectMetadata().getVersionId());
 
             billService.updateBill(creds[0],billId,b);
             return billAttachment;
