@@ -39,8 +39,4 @@ public class BillAttachment {
     @JsonIgnore
     @Column(name = "file_content_type")
     private String fileContentType;
-
-    @JsonIgnore
-    @Column(name = "file_version_id")
-    private String fileVersionId;
 }

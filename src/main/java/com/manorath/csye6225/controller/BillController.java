@@ -157,18 +157,20 @@ public class BillController extends GeneralExceptionHandler {
             billAttachment.setUrl(billId + "/" + file.getOriginalFilename());
             billAttachment.setUploadDate(new Date());
             billAttachment.setId(UUID.randomUUID().toString());
-
-            billAttachment.setFileContentType(file.getContentType());
-            b.setAttachment(billAttachment);
-
+            billAttachment.setAttachmentSize(file.getSize());
             // store
             s3Client.putObject(bucketName,billId+"/"+file.getOriginalFilename(),file.getInputStream(),new ObjectMetadata());
             // get attachment to store metadata
-            S3Object result = s3Client.getObject(bucketName,billAttachment.getUrl());
+            S3Object result = s3Client.getObject(bucketName,billId+"/"+file.getOriginalFilename());
+            System.out.println(result.getKey());
 
-            billAttachment.setMd5Hash(result.getObjectMetadata().getContentMD5());
-            billAttachment.setAttachmentSize(result.getObjectMetadata().getContentLength());
-            billAttachment.setFileVersionId(result.getObjectMetadata().getVersionId());
+
+            billAttachment.setFileContentType(result.getObjectMetadata().getContentType());
+            billAttachment.setMd5Hash(Utils.getMD5(file.getBytes()));
+            billAttachment.setLastModified(result.getObjectMetadata().getLastModified());
+
+
+            b.setAttachment(billAttachment);
 
             billService.updateBill(creds[0],billId,b);
             return billAttachment;
