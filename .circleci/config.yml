@@ -10,27 +10,22 @@ jobs:
           MYSQL_DATABASE: csye6225
     steps:
       - checkout # check out source code to working directory
-      #- restore_cache:
-      #    key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      #- restore_cache:
-      #    key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - run:
-          # Our primary container isn't MYSQL so run a sleep command until it's ready.
           name: Waiting for MySQL to be ready
           command: |
             for i in `seq 1 10`;
             do
-            nc -z 127.0.0.1 3306 && echo Success && exit 0
-            echo -n .
-            sleep 1
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
             done
             echo Failed waiting for MySQL && exit 1
       - run:
-          name: Compile
-          command: ./gradlew compileJava
+          name: Clean
+          command: ./gradlew clean
       - run:
-          name: Test
-          command: ./gradlew test
+          name: Build
+          command:  ./gradlew test
           
   build:
     docker:
@@ -40,38 +35,81 @@ jobs:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: csye6225
     steps:
-      - checkout # check out source code to working directory
-      #- restore_cache:
-      #    key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      #- restore_cache:
-      #    key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      - checkout
       - run:
-          # Our primary container isn't MYSQL so run a sleep command until it's ready.
           name: Waiting for MySQL to be ready
           command: |
             for i in `seq 1 10`;
             do
-            nc -z 127.0.0.1 3306 && echo Success && exit 0
-            echo -n .
-            sleep 1
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
             done
             echo Failed waiting for MySQL && exit 1
       - run:
-          name: Compile
-          command: ./gradlew compileJava
+          name: Install packages
+          command: |
+            sudo apt-get update && sudo apt-get install wget zip unzip python-pip python-dev build-essential -y
+            python --version
       - run:
-          name: Test
-          command: ./gradlew test
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Build Artifact
+          command: |
+            ls -al
+            ./gradlew clean
+            ./gradlew build
+      - run:
+          name: Zip Artifact
+          command: |
+            echo "current build number is ${CIRCLE_BUILD_NUM}"
+            pwd
+            echo "current directory content"
+            ls -al
+            echo "Making the codedeploy_artifact directory"
+            mkdir -p codedeploy_artifact
+            echo "Changing directory to codedeploy_artifact"
+            cd codedeploy_artifact
+            echo "Copying all .sh files from ./scripts directory to the codedeploy_artifact"
+            cp ../scripts/*.sh .
+            echo "Copying all .yml files from ../ directory to the codedeploy_artifact"
+            cp ../*.yml .
+            echo "Copying the jar file from ../build/New_libs/ to the codedeploy_artifact"
+            cp ..build/New_libs/csye6225-0.0.1-SNAPSHOT.jar .
+            echo "current directory content"
+            ls -al
+            echo "Zipping all files in the codedeploy_artifact directory"
+            zip -r csye6255-webapp-${CIRCLE_BUILD_NUM}.zip .
+            ls -al
+            pwd
+            echo "Changing directory to root"
+            cd ..
+            pwd
+            ls -al
+      - run:
+          name: Upload Artifact to S3
+          command: |
+            echo "Uploading Artifact to S3 bucket ${CODE_DEPLOY_S3_BUCKET}"
+            cd codedeploy_artifact
+            aws s3 cp csye6255-webapp-${CIRCLE_BUILD_NUM}.zip s3://${CODE_DEPLOY_S3_BUCKET}
+            cd ..
+      - run:
+          name: Make CodeDeploy API call
+          command: |
+            aws configure set region ${AWS_REGION}
+            echo "Calling CodeDeploy Agent to pick the artifact and deploy on EC2 instance"
+            aws deploy create-deployment --application-name "csye6225-webapp" --deployment-group-name "csye6225-webapp-deployment" --s3-location bucket=${CODE_DEPLOY_S3_BUCKET},bundleType=zip,key=csye6255-webapp-${CIRCLE_BUILD_NUM}.zip
 
 
 workflows:
   version: 2
   pr-check-workflow:
     jobs:
-      - pr_check
+    - pr_check
   build_deploy-workflow:
     jobs:
-      - build:
+    - build:
           filters:
             branches:
               only:
