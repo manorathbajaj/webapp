@@ -59,7 +59,7 @@ public class BillController extends GeneralExceptionHandler {
     }
 
 
-    @RequestMapping(value = "v1/bill/",
+    @RequestMapping(value = "v2/bill/",
             method = RequestMethod.POST,
             consumes = {"application/json"},
             produces = {"application/json"})
@@ -79,7 +79,7 @@ public class BillController extends GeneralExceptionHandler {
         return bill;
     }
 
-    @RequestMapping(value = "v1/bills",
+    @RequestMapping(value = "v2/bills",
             method = RequestMethod.GET,
             produces = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
