@@ -35,6 +35,7 @@ public class UserService extends GeneralExceptionHandler {
         // Set account created and account updated
         user.setId(UUID.randomUUID().toString());
         user.setAccountCreated(new Date());
+        user.setAccountUpdated(new Date());
         if(Utils.checkPassword(user.getPassword())) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         } else {
@@ -43,10 +44,10 @@ public class UserService extends GeneralExceptionHandler {
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            User uuu = userRepository.save(user);
+            userRepository.save(user);
             stopWatch.stop();
             statsd.recordExecutionTime("BillDbCreate",stopWatch.getLastTaskTimeMillis());
-            return uuu;
+            return user;
         } catch (Exception e) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
@@ -64,10 +65,10 @@ public class UserService extends GeneralExceptionHandler {
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-             User uuu = userRepository.save(user);
+             userRepository.save(user);
             stopWatch.stop();
              statsd.recordExecutionTime("BillDbUpdate",stopWatch.getLastTaskTimeMillis());
-             return uuu;
+             return user;
         } catch (Exception e) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
