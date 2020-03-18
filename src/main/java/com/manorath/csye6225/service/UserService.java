@@ -4,9 +4,11 @@ import com.manorath.csye6225.exception.*;
 import com.manorath.csye6225.model.User;
 import com.manorath.csye6225.repository.UserRepository;
 import com.manorath.csye6225.util.Utils;
+import com.timgroup.statsd.StatsDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.sql.SQLException;
@@ -23,6 +25,9 @@ public class UserService extends GeneralExceptionHandler {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private StatsDClient statsd;
+
     public UserService() {}
 
     // Buisness Logic
@@ -30,14 +35,18 @@ public class UserService extends GeneralExceptionHandler {
         // Set account created and account updated
         user.setId(UUID.randomUUID().toString());
         user.setAccountCreated(new Date());
-        user.setAccountUpdated(new Date());
         if(Utils.checkPassword(user.getPassword())) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         } else {
             return null;
         }
         try {
-            return userRepository.save(user);
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            User uuu = userRepository.save(user);
+            stopWatch.stop();
+            statsd.recordExecutionTime("BillDbCreate",stopWatch.getLastTaskTimeMillis());
+            return uuu;
         } catch (Exception e) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
@@ -53,7 +62,12 @@ public class UserService extends GeneralExceptionHandler {
             return null;
         }
         try {
-            return userRepository.save(user);
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+             User uuu = userRepository.save(user);
+            stopWatch.stop();
+             statsd.recordExecutionTime("BillDbUpdate",stopWatch.getLastTaskTimeMillis());
+             return uuu;
         } catch (Exception e) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
@@ -64,7 +78,11 @@ public class UserService extends GeneralExceptionHandler {
     }
 
     public User findUserByEmail(String email,String password) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         User u = userRepository.findUserByEmail(email);
+        stopWatch.stop();
+        statsd.recordExecutionTime("BillDbUpdate",stopWatch.getLastTaskTimeMillis());
         if(u == null) {
             throw new PasswordNotValidException("Password not valid");
         }
