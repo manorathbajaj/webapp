@@ -6,7 +6,11 @@ files:
     destination: /home/ubuntu/jar/
 
 hooks:
+  ApplicationStop:
+   - location: ./applicationStop.sh
+          timeout: 30
+          runas: ubuntu
   AfterInstall:
     - location: ./afterInstall.sh
-      timeout: 180
+      timeout: 30
       runas: ubuntu
