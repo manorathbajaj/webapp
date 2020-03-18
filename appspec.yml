@@ -8,8 +8,8 @@ files:
 hooks:
   ApplicationStop:
    - location: ./applicationStop.sh
-          timeout: 30
-          runas: ubuntu
+      timeout: 30
+      runas: ubuntu
   AfterInstall:
     - location: ./afterInstall.sh
       timeout: 30
