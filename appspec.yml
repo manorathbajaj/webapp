@@ -7,7 +7,7 @@ files:
 
 hooks:
   ApplicationStop:
-   - location: ./applicationStop.sh
+    - location: ./applicationStop.sh
       timeout: 30
       runas: ubuntu
   AfterInstall:
