@@ -8,5 +8,5 @@ files:
 hooks:
   AfterInstall:
     - location: ./afterInstall.sh
-      timeout: 30
+      timeout: 180
       runas: ubuntu
