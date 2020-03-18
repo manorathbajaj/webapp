@@ -84,6 +84,7 @@ public class BillController extends GeneralExceptionHandler {
         response.setHeader("description","Bill created");
         stopWatch.stop();
         statsd.recordExecutionTime("BillHttpPOST",stopWatch.getLastTaskTimeMillis());
+        logger.info("bill post");
         return bill;
     }
 
@@ -99,7 +100,8 @@ public class BillController extends GeneralExceptionHandler {
          List<Bill> bills = billService.findBillByUser(creds[0]);
         stopWatch.stop();
          statsd.recordExecutionTime("BillHttpGetAll",stopWatch.getLastTaskTimeMillis());
-        return bills;
+        logger.info("bill get");
+         return bills;
     }
 
     @DeleteMapping("v1/bill/{id}")
@@ -118,6 +120,7 @@ public class BillController extends GeneralExceptionHandler {
                  break;
         }
         stopWatch.stop();
+        logger.info("bill delete");
         statsd.recordExecutionTime("BillHttpDelete",stopWatch.getLastTaskTimeMillis());
     }
 
@@ -134,6 +137,7 @@ public class BillController extends GeneralExceptionHandler {
         Bill bill = billService.getBillById(cred[0],billId);
         stopWatch.stop();
         statsd.recordExecutionTime("BillHttpDelete",stopWatch.getLastTaskTimeMillis());
+        logger.info("bill get 1");
         return bill;
     }
 
@@ -160,6 +164,7 @@ public class BillController extends GeneralExceptionHandler {
         response.setHeader("description","Bill created");
         stopWatch.stop();
         statsd.recordExecutionTime("BillHttpPut",stopWatch.getLastTaskTimeMillis());
+        logger.info("bill put");
         return b;
     }
 
