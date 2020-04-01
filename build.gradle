@@ -53,6 +53,15 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '1.2.2.RELEASE'
     // https://mvnrepository.com/artifact/com.timgroup/java-statsd-client
     compile group: 'com.timgroup', name: 'java-statsd-client', version: '3.0.2'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.11.754'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sns
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.9.3'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sns
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.11.755'
+
+
+
     //Rest assured
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.0.0'
     testCompile group: 'io.rest-assured', name: 'rest-assured-common', version: '4.0.0'

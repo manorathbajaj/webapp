@@ -4,6 +4,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.manorath.csye6225.exception.*;
 import com.manorath.csye6225.model.Bill;
 import com.manorath.csye6225.model.BillAttachment;
@@ -25,10 +30,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 public class BillController extends GeneralExceptionHandler {
@@ -52,12 +59,17 @@ public class BillController extends GeneralExceptionHandler {
     @Value("${amazon.s3.bucket}")
     String bucketName;
 
+    @Value("${aws.domain.name}")
+    String domainName;
+
     private AmazonS3 s3Client;
+    private AmazonSQS amazonSQS;
 
 
     @PostConstruct
     private void buildAmazon() {
         this.s3Client = AmazonS3ClientBuilder.standard().build();
+        this.amazonSQS = AmazonSQSClientBuilder.defaultClient();
     }
 
 
@@ -279,5 +291,18 @@ public class BillController extends GeneralExceptionHandler {
         }
         stopWatch.stop();
         statsd.recordExecutionTime("FileHttpDelete",stopWatch.getLastTaskTimeMillis());
+    }
+
+    @RequestMapping(value = "/v1/bills/due/{x}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void getDue(@RequestHeader(value = "Authorization")String auth
+            , @PathVariable(value = "x") String days) {
+        String creds[] = Utils.decode(auth);
+        List<Bill> bills = billService.findBillByUser(creds[0]);
+        String queue_url = amazonSQS.getQueueUrl("bills-due-queue").getQueueUrl();
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queue_url)
+                .withMessageBody(creds[0]+","+days);
+        amazonSQS.sendMessage(send_msg_request);
     }
 }

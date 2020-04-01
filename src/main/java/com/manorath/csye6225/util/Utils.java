@@ -1,12 +1,15 @@
 package com.manorath.csye6225.util;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.manorath.csye6225.model.Bill;
 import com.manorath.csye6225.model.User;
 import net.minidev.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
@@ -64,5 +67,14 @@ public class Utils {
 
         }
         return sb.toString();
+    }
+    // get due dates
+    public static int getDiff(Date date) {
+        Date current = new Date();
+        long millisecondDiff = date.getTime() - current.getTime();
+        if(millisecondDiff > 0)
+            return (int)TimeUnit.DAYS.convert(millisecondDiff,TimeUnit.MILLISECONDS);
+        else
+            return Integer.MAX_VALUE;
     }
 }
