@@ -68,6 +68,7 @@ public class BackGroundThread {
             }
             CreateTopicResult createRes = amazonSNS.createTopic("email_due_patients");
             amazonSNS.publish(new PublishRequest(createRes.getTopicArn(),message));
+            amazonSQS.deleteMessage(queue_url,m.getReceiptHandle());
             logger.info("published message {}",message);
         }
     }
