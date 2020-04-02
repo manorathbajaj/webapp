@@ -52,7 +52,6 @@ public class BackGroundThread {
 
     @Scheduled(fixedRate =  10000)
     public void pollQueue() {
-        domainName = domainName.substring(0,domainName.length()-1);
         String queue_url = amazonSQS.getQueueUrl("bills-due-queue").getQueueUrl();
         List<Message> messages = amazonSQS.receiveMessage(queue_url).getMessages();
         for(Message m : messages) {
@@ -65,7 +64,7 @@ public class BackGroundThread {
 
             String message = body[0];
             for(Bill bill: dueBills) {
-                message = message + "," + domainName+"/v1/bill/"+bill.getId();
+                message = message + "," +domainName.substring(0,domainName.length()-1)+"/v1/bill/"+bill.getId();
             }
             CreateTopicResult createRes = amazonSNS.createTopic("email_due_patients");
             amazonSNS.publish(new PublishRequest(createRes.getTopicArn(),message));
