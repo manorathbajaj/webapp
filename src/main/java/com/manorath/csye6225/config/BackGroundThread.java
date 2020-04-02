@@ -52,6 +52,7 @@ public class BackGroundThread {
 
     @Scheduled(fixedRate =  10000)
     public void pollQueue() {
+        domainName = domainName.substring(0,domainName.length()-1);
         String queue_url = amazonSQS.getQueueUrl("bills-due-queue").getQueueUrl();
         List<Message> messages = amazonSQS.receiveMessage(queue_url).getMessages();
         for(Message m : messages) {
