@@ -58,15 +58,15 @@ public class UserController extends GeneralExceptionHandler {
     public String showUser(@RequestHeader(value = "Authorization")String auth) {
         String cred[] = Utils.decode(auth);
         statsd.incrementCounter("UserHttpGet");
-        StopWatch stopWatch = new StopWatch();
+        //StopWatch stopWatch = new StopWatch();
         User u;
         try {
             u = userService.findUserByEmail(cred[0], cred[1]);
         } catch (NullPointerException e) {
             throw new PasswordDoesNotMatchException("Password does not match");
         }
-        stopWatch.stop();
-        statsd.recordExecutionTime("UserHttpGet",stopWatch.getLastTaskTimeMillis());
+        //stopWatch.stop();
+        //statsd.recordExecutionTime("UserHttpGet",stopWatch.getLastTaskTimeMillis());
         return Utils.toJsonString(u);
     }
 
@@ -77,7 +77,7 @@ public class UserController extends GeneralExceptionHandler {
     public void updateUser(@RequestHeader(value = "Authorization")String auth,@Valid @RequestBody User user) {
 
         statsd.incrementCounter("UserHttpPut");
-        StopWatch stopWatch = new StopWatch();
+        //StopWatch stopWatch = new StopWatch();
         String cred[] = Utils.decode(auth);
         User u = userService.findUserByEmail(cred[0],cred[1]);
         if(user.getAccountCreated()!= null || user.getAccountUpdated()!= null)
@@ -95,8 +95,8 @@ public class UserController extends GeneralExceptionHandler {
         if(Utils.checkPassword(user.getPassword()))
         {
             u.setPassword(user.getPassword());
-            stopWatch.stop();
-            statsd.recordExecutionTime("UserHttpPut",stopWatch.getLastTaskTimeMillis());
+          //  stopWatch.stop();
+           // statsd.recordExecutionTime("UserHttpPut",stopWatch.getLastTaskTimeMillis());
         } else {
             throw new PasswordNotValidException("Please Enter a valid password");
         }
